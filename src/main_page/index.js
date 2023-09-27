@@ -10,6 +10,7 @@ import {
 import FeaturedHouse from "./featured-house";
 import SearchResults from "../search-results";
 import HouseFilter from "./house-filter";
+import HouseFromQuery from "../house/HouseFromQuery";
 
 function App() {
   const [allHouses, setAllHouses] = useState([]);
@@ -36,6 +37,9 @@ function App() {
         <Switch>
           <Route path="/searchresults/:country">
             <SearchResults allHouses={allHouses}></SearchResults>
+          </Route>
+          <Route path="/house/:id">
+            <HouseFromQuery allHouses={allHouses}> </HouseFromQuery>
           </Route>
           <Route exact path="/">
             <FeaturedHouse house={featuredHouse}></FeaturedHouse>
