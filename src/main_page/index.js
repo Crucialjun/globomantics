@@ -1,7 +1,6 @@
 import "./main_page.css";
 
 import Header from "./header";
-import { useEffect, useMemo, useState } from "react";
 import {
   Switch,
   BrowserRouter,
@@ -11,41 +10,32 @@ import FeaturedHouse from "./featured-house";
 import SearchResults from "../search-results";
 import HouseFilter from "./house-filter";
 import HouseFromQuery from "../house/HouseFromQuery";
+import useHouses from "../hooks/useHouses";
+import useFeaturedHouse from "../hooks/usefeaturedHouse";
+import HousesContext from "../context/housesContext";
 
 function App() {
-  const [allHouses, setAllHouses] = useState([]);
-  useEffect(() => {
-    const fetchHouses = async () => {
-      const rsp = await fetch("/houses.json");
-      const houses = await rsp.json();
-      setAllHouses(houses);
-    };
-    fetchHouses();
-  }, []);
-
-  const featuredHouse = useMemo(() => {
-    if (allHouses.length) {
-      const randomIndex = Math.floor(Math.random() * allHouses.length);
-      return allHouses[randomIndex];
-    }
-  }, [allHouses]);
+  const allHouses = useHouses();
+  const featuredHouse = useFeaturedHouse(allHouses);
   return (
     <BrowserRouter>
-      <div className="container">
-        <Header subtitle="Providing houses all over the world props"></Header>
-        <HouseFilter allHouses={allHouses}></HouseFilter>
-        <Switch>
-          <Route path="/searchresults/:country">
-            <SearchResults allHouses={allHouses}></SearchResults>
-          </Route>
-          <Route path="/house/:id">
-            <HouseFromQuery allHouses={allHouses}> </HouseFromQuery>
-          </Route>
-          <Route exact path="/">
-            <FeaturedHouse house={featuredHouse}></FeaturedHouse>
-          </Route>
-        </Switch>
-      </div>
+      <HousesContext.Provider value={allHouses}>
+        <div className="container">
+          <Header subtitle="Providing houses all over the world props"></Header>
+          <HouseFilter></HouseFilter>
+          <Switch>
+            <Route path="/searchresults/:country">
+              <SearchResults></SearchResults>
+            </Route>
+            <Route path="/house/:id">
+              <HouseFromQuery> </HouseFromQuery>
+            </Route>
+            <Route exact path="/">
+              <FeaturedHouse house={featuredHouse}></FeaturedHouse>
+            </Route>
+          </Switch>
+        </div>
+      </HousesContext.Provider>
     </BrowserRouter>
   );
 }
